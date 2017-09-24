@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/jquery.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <script type="text/javascript" src="js/easyui.js"></script>
+    <script>
+        //生产验证码
+        $(function(){
+            $('#kaptchaImage').click(function () {//生成验证码
+                $(this).hide().attr('src', './kaptcha/getKaptchaImage.do?' + Math.floor(Math.random()*100) ).fadeIn();
+                event.cancelBubble=true;
+            });
+        });
+        window.onbeforeunload = function(){
+            //关闭窗口时自动退出
+            if(event.clientX>360&&event.clientY<0||event.altKey){
+                alert(parent.document.location);
+            }
+        };
+        function changeCode() {
+            $('#kaptchaImage').hide().attr('src', 'getKaptchaImage.do?' + Math.floor(Math.random()*100) ).fadeIn();
+            event.cancelBubble=true;
+        }
+        function aa() {
+            $("#formlogin").form("submit",{
+                success:function (data) {
+                   if(data=="error"){
+                       $("#span").css("display","block")
+                   }else {
+                       window.location.href="/main.jsp"
+                   }
+                }
+            })
+        }
+
+    </script>
+</head>
+<body>
+    <div style="width: 100%;height: 100%;display: flex;justify-content: center;align-items: center">
+        <form id="formlogin" class="form-group" action="login.do" method="post">
+            <div class="input-group" style="margin-bottom: 30px">
+                <span class="input-group-addon">账号</span>
+                <input name="name" type="text" class="form-control" >
+            </div>
+            <div class="input-group" style="margin-bottom: 30px">
+                <span class="input-group-addon">密码</span>
+                <input name="pwd" type="password" class="form-control">
+            </div>
+            <div>
+                <label>验证码:
+                    <input  name="kaptcha" type="text" id="kaptcha" maxlength="4" class="chknumber_input" />
+                    <span id="span" style="display:none;color: red">验证码输入错误</span>
+                </label>
+                <img src="getKaptchaImage.do" id="kaptchaImage"  style="margin-bottom: -3px"/><br/>
+                <a href="#" onclick="changeCode()">看不清?换一张</a>
+            </div>
+            <div style="margin-top: 5px">
+                <a href="javascript:aa()"  class="btn btn-success btn-block" >登录</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qianfeng.dao.ResDao">
+    <resultMap id="allres" type="com.qianfeng.beans.Res">
+        <result property="text" column="text"/>
+        <result property="url" column="p_url"/>
+        <collection property="children" javaType="com.qianfeng.beans.Res">
+            <result property="text" column="children"/>
+            <result property="url" column="url"/>
+        </collection>
+    </resultMap>
+    <select id="findRes" resultMap="allres" parameterType="int">
+        SELECT p.text AS TEXT,p.url as p_url,s.text AS children,s.url AS url FROM res p
+        LEFT JOIN res s ON p.id=s.pid LEFT JOIN user_res AS ur ON p.id=ur.rid
+        WHERE ur.uid=#{id} AND p.pid=0
+    </select>
+    <select id="finAllRes" resultMap="allres" >
+        SELECT p.text AS TEXT,s.text AS children,s.url AS url FROM
+        res p LEFT JOIN res s ON p.id=s.pid LEFT JOIN user_res AS ur
+        ON p.id=ur.rid WHERE p.pid=0
+    </select>
+    <select id="findAllResForpem" resultType="com.qianfeng.beans.Res">
+        SELECT * FROM res
+    </select>
+    <insert id="adduserRes" parameterType="map">
+        INSERT INTO user_res(uid,rid)
+            VALUES <foreach collection="list" item="rid" separator=",">
+            (#{userid},#{rid})
+        </foreach>
+    </insert>
+    <delete id="deleteUserRes" parameterType="int">
+        DELETE FROM user_res WHERE uid=#{userid}
+    </delete>
+    <insert id="addres" parameterType="com.qianfeng.beans.Res">
+        INSERT INTO res(text,pid,url,perms) VALUES(#{text},#{pid},#{url},#{perms})
+    </insert>
+    <update id="updateres" parameterType="com.qianfeng.beans.Res">
+        UPDATE res set text=#{text},url=#{url},pid=#{pid},perms=#{perms} WHERE id=#{id}
+    </update>
+    <delete id="delres" parameterType="list">
+        DELETE FROM res <if test="list!=null">
+        WHERE id in<foreach collection="list" item="id" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+    </if>
+    </delete>
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="mall" />
+        <module name="protal" />
+        <module name="protals" />
+        <module name="restful" />
+        <module name="sso" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="es" target="1.8" />
+      <module name="mall" target="1.5" />
+      <module name="protal" target="1.5" />
+      <module name="protals" target="1.8" />
+      <module name="restful" target="1.8" />
+      <module name="sso" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

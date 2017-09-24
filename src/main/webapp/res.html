@@ -1,0 +1,97 @@
+<div id="res"></div>
+<div id="window_addres" style="width: 400px;height: 300px;display: flex;justify-content: center;align-items: center" class="easyui-window" data-options="closed:true,modal:true" >
+
+    <form id="form_addres" action="addres.do" >
+        <input name="id" type="hidden" id="id" value="0">
+        <div style="margin-bottom: 20px;">权限:<input name="text" type="text" class="easyui-textbox" style="width: 300px;height: 30px;"></div>
+        <div style="margin-bottom: 20px;">上级节点<input name="pid" type="text" class="easyui-textbox" style="width: 300px;height: 30px;"></div>
+        <div style="margin-bottom: 20px;">url:<input name="url" type="text" class="easyui-textbox" style="width: 300px;height: 30px;"></div>
+        <div style="margin-bottom: 20px;">权限标识符:<input name="perms" type="text" class="easyui-textbox" style="width: 300px;height: 30px" ></div>
+        <div style="text-align: center;">
+            <a href="javascript:saveres()" class="easyui-linkbutton btn-block">保存</a>
+        </div>
+    </form>
+    <div/>
+    <script>
+        function showres() {
+            $("#res").datagrid({
+                title:"资源管理",
+                url:"findAllResForpem.do",
+                columns:[[
+                    {field:"id",checkbox:true,width:100,},
+                    {field:"text",title:"权限",width:100},
+                    {field:"_parentId",title:"子节点",width:100},
+                    {field:"perms",title:"权限标识符",width:100},
+                ]],
+                toolbar:[
+                {text:"添加",iconCls:"icon-add",handler:function () {addres();}},
+                {text:"修改",iconCls:"icon-edit",handler:function () {updateres();}},
+                {text:"删除",iconCls:"icon-remove",handler:function () {delres();}},
+                 ]
+            })
+        }
+        $(showres)
+        function addres() {
+            $("#form_addres").form("clear");
+            $("#id").val("0")
+            $("#window_addres").window("open")
+        }
+        function saveres() {
+            $("#form_addres").form("submit",{
+                success:function (b) {
+                    $("#res").datagrid("reload");
+                    $("#window_addres").window("close")
+                    $.messager.alert("系统提示",b)
+                }
+            })
+        }
+        function updateres() {
+            var row = $('#res').datagrid('getSelected');
+            if (row == null)
+            {
+                $.messager.alert("系统提示", "请选择您要修改的数据！");
+                return;
+            }
+            $("#window_addres").window("open")
+            if(row){
+                $("#window_addres").form("load",{
+                    id:row.id,
+                    text:row.text,
+                    url:row.url,
+                    pid:row.pid,
+                    perms:row.perms
+                })
+            }
+        }
+        function delres() {
+            //返回选中多行
+            var data = $("#res").datagrid("getSelections")
+            //判断是否选中行
+            if (data.length == 0) {
+                $.messager.alert("提示", "请选择要删除的行！", "info");
+                return;
+            } else {
+                var ids =new Array() ;
+                //批量获取选中行的评估模板ID
+                for (i = 0; i < data.length; i++) {
+                    ids[i]=data[i].id
+                }
+                //包装为json
+                var json=JSON.stringify(ids);
+                if(confirm("是否删除所选行")) {
+                    $.ajax({
+                        url: "delres.do",//服务接口地址
+                        method: "post",       //请求的方法
+                        data: json,           //提交的数据
+                        contentType: "application/json",
+                        success: function (d) {
+                            //刷新
+                             $("#res").datagrid("reload");
+                             $.messager.alert("系统提示",d)
+                        }
+                    });
+                }
+            }
+        }
+
+    </script>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qianfeng.dao.RoleDao">
+    <select id="findallrole" resultType="com.qianfeng.beans.Role" parameterType="map">
+        SELECT * from role limit #{start},#{size}
+    </select>
+    <insert id="addRole" parameterType="com.qianfeng.beans.Role">
+        INSERT into role(rolename) VALUES (#{rolename})
+    </insert>
+    <update id="updateRole" parameterType="com.qianfeng.beans.Role">
+        UPDATE role set rolename=#{rolename} where id=#{id}
+    </update>
+    <delete id="delrole" parameterType="list">
+        DELETE from role <if test="list!=null">
+        <where>
+            id in
+            <foreach collection="list" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </where>
+    </if>
+    </delete>
+    <select id="getroletatole" resultType="int">
+        SELECT COUNT(id)  FROM role
+    </select>
+</mapper>

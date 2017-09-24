@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qianfeng.dao.CommodityDao">
+    <insert id="addcommdity" parameterType="com.qianfeng.beans.Commodity">
+        INSERT INTO commodity(id,categoryid,content,name) VALUES(#{id},#{categoryid},#{content},#{name})
+    </insert>
+    <select id="findallcommodity" resultType="com.qianfeng.beans.Commodity" parameterType="map">
+        SELECT a.*,b.text as categorname FROM commodity a,category b WHERE a.categoryid=b.id limit #{start},#{size}
+    </select>
+    <select id="findallcommodity2" resultType="com.qianfeng.beans.Commodity" >
+        SELECT * FROM commodity
+    </select>
+    <select id="findbycommodity" parameterType="String" resultType="com.qianfeng.beans.Commodity">
+        SELECT * FROM commodity WHERE id=#{id}
+    </select>
+    <select id="commototal" resultType="int">
+        SELECT COUNT(1) FROM commodity
+    </select>
+    <delete id="delcommodity" parameterType="list">
+        DELETE FROM commodity
+        <if test="list!=null">
+          <where>
+              id IN
+              <foreach collection="list" item="id" open="(" close=")" separator=",">
+              #{id}
+              </foreach>
+          </where>
+        </if>
+    </delete>
+    <update id="updatecommodity" parameterType="com.qianfeng.beans.Commodity">
+        UPDATE commodity set categoryid=#{categoryid},content#{content},name#{name} WHERE id=#{id}
+    </update>
+    
+    <!--游标 -->
+    <parameterMap id="p10" type="map">
+        <parameter property="x" javaType="FLOAT" mode="IN"/>
+        <parameter property="y" jdbcType="FLOAT" mode="OUT"/>
+    </parameterMap>
+    <select id="findTotal" statementType="CALLABLE" parameterMap="p10">
+        {call p10(?,?)}
+    </select>
+</mapper>

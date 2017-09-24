@@ -1,0 +1,110 @@
+<div id="first2"></div>
+<div id="window_addrole" style="width: 400px;height: 300px;display: flex;justify-content: center;align-items: center" class="easyui-window" data-options="closed:true,modal:true" >
+
+    <form id="form_addrole" action="addRole.do" >
+        <input name="id" type="hidden" id="id" value="0">
+        <div style="margin-bottom: 20px;">账户:<input name="rolename" type="text" class="easyui-textbox" style="width: 300px;height: 30px;"></div>
+        <div style="text-align: center;">
+            <a href="javascript:save()" class="easyui-linkbutton">保存</a>
+        </div>
+    </form>
+    <div/>
+
+    <script>
+        function show() {
+            $("#first2").datagrid({
+                title:"角色管理",
+                pagination:true,
+
+                columns:[[
+                    {field:"id",checkbox:true,width:100,},
+                    {field:"rolename",title:"名称",width:100}
+                ]],
+                toolbar:[
+                    {text:"添加",iconCls:"icon-add",handler:function () {addRole();}},
+                    {text:"修改",iconCls:"icon-edit",handler:function () {update();}},
+                    {text:"删除",iconCls:"icon-remove",handler:function () {del();}}
+                ]
+            })
+            paging(1,5)
+        }
+
+        function paging(page,size) {
+            var num="";
+            $.ajax({
+                url:"getroletotal.do",
+                async:true,
+                success:function (data) {
+                    num=data;
+                }
+            });
+            $.get("finAllRole.do",{page:page,size:size},function (data) {
+                var json=JSON.parse(data);
+                $("#first2").datagrid("loadData",json);
+                var pager = $("#first2").datagrid("getPager");
+                pager.pagination({
+                    total:num,
+                    pageSize:size,
+                    pageNumber:page,
+                    pageList:[5,10,15],
+                    onSelectPage:function (page,size) {
+                        paging(page,size)
+                    }
+                })
+            })
+        }
+        $(show)
+        function addRole() {
+
+            $("#id").val(0)
+            $("#window_addrole").window("open")
+        }
+        function save() {
+            $("#form_addrole").form("submit",{
+                success:function (b) {
+                    $("#window_addrole").window("close")
+                    paging(1,5);
+                   // $("#first").datagrid("reload")
+                }
+            })
+        }
+        function update() {
+            var data=$("#first2").datagrid("getSelected");
+            alert(data)
+            if (data == null)
+            {
+                $.messager.alert("系统提示", "请选择您要修改的数据！");
+                return;
+            }
+            if(data){
+                $("#window_addrole").window("open");
+                $("#window_addrole").form("load",data)
+            }
+
+        }
+        function del() {
+            var data=$("#first2").datagrid("getSelections")
+            if(data==null){
+                $.messager.alert("系统提示","请选择需要删除的数据");
+                return;
+            }else {
+                var ids = new Array();
+                for (i = 0; i < data.length; i++) {
+                    ids[i] = data[i].id
+                }
+                var json = JSON.stringify(ids);
+                if (confirm("是否删除所选行")) {
+                    $.ajax({
+                        url: "delrole.do",
+                        data: json,
+                        contentType: "application/json",
+                        method: "post",
+                        success: function (data) {
+                            paging(1, 5)
+                            // $("#first2").datagrid("reload");
+                        }
+                    })
+                }
+            }
+        }
+    </script>
